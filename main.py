@@ -19,7 +19,33 @@ class ReleaseType(Enum):
     MAJOR = "major"
 
 
-def main(args):
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--type",
+        dest="release_type",
+        default=ReleaseType.PATCH,
+        type=ReleaseType,
+        choices=list(ReleaseType),
+        help="Type of release: patch, minor, or major",
+    )
+    parser.add_argument(
+        "--changelog",
+        dest="changelog_path",
+        default=os.path.join(
+            os.getcwd(), "CHANGELOG.md"
+        ),
+        type=str,
+        help="Path to the changelog file",
+    )
+    parser.add_argument(
+        "--v",
+        dest="new_version",
+        type=str,
+        help="Set exact version. It will override the --type value",
+    )
+    args = parser.parse_args()
+
     try:
         with open(args.changelog_path, "r") as f:
             content = f.read()
@@ -91,29 +117,4 @@ def update_changelog_links(content, new_version):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--type",
-        dest="release_type",
-        default=ReleaseType.PATCH,
-        type=ReleaseType,
-        choices=list(ReleaseType),
-        help="Type of release: patch, minor, or major",
-    )
-    parser.add_argument(
-        "--changelog",
-        dest="changelog_path",
-        default=os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "CHANGELOG.md"
-        ),
-        type=str,
-        help="Path to the changelog file",
-    )
-    parser.add_argument(
-        "--v",
-        dest="new_version",
-        type=str,
-        help="Set exact version. It will override the --type value",
-    )
-    args = parser.parse_args()
-    main(args)
+    main()
